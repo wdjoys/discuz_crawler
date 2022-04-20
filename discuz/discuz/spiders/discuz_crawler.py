@@ -73,7 +73,7 @@ class DiscuzCrawlerSpider(CrawlSpider):
     def paser_post(self, response):
         full_title_selector = response.xpath('//h1[@class="ts"]')
         subject_name = full_title_selector.xpath("span/text()").get()
-        subject_tag = full_title_selector.xpath("a/text()").get()
+        subject_tag = full_title_selector.xpath("a").xpath("string(.)").get()
         subject_url = response.url
         subject_id = re.findall(r"tid=(\d+)", subject_url)[0]
 
@@ -90,11 +90,13 @@ class DiscuzCrawlerSpider(CrawlSpider):
 
         post_selectors = response.xpath('//table[@class="plhin"]/tr[1]')
         for post_selector in post_selectors:
-            content = post_selector.xpath("td[2]/div[@class='pct']").get()
+            content = post_selector.xpath("td[2]/div[@class='pct']//table").get()
             username = post_selector.xpath(
                 'td[1]//div[@class="pi"]//div[@class="authi"]/a/text()'
             ).get()
-            post_time = post_selector.xpath("//em[@id]/text()").get()
+            post_time = (
+                post_selector.xpath("//em[@id]/text()").get().replace("发表于 ", "")
+            )
             floor = (
                 post_selector.xpath("td[2]/div/strong/a")
                 .xpath("string(.)")
@@ -106,10 +108,10 @@ class DiscuzCrawlerSpider(CrawlSpider):
             yield {
                 "type": "post",
                 "data": {
-                    # "content": content,
+                    "content": content,
                     "username": username,
                     "post_time": post_time,
                     "floor": floor,
-                    "subject_url": subject_url,
+                    # "subject_url": subject_url,
                 },
             }

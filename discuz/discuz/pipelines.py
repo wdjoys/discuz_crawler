@@ -19,15 +19,18 @@ Copyright (c) 2022 by github/wdjoys, All Rights Reserved.
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 
+import pymongo
+
 
 class DiscuzPipeline:
-    def opene_spider(self, spider):
-
+    def open_spider(self, spider):
+        self.client = pymongo.MongoClient(host="localhost", port=27017)
         pass
 
     def process_item(self, item, spider):
-        print(item)
+        self.client.geem2bbs[item["type"]].insert_one(item["data"])
         return item
 
     def close_spider(self, spider):
+        self.client.close()
         pass
