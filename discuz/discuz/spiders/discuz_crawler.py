@@ -75,14 +75,8 @@ class DiscuzCrawlerSpider(CrawlSpider):
         subject_name = full_title_selector.xpath("span/text()").get()
         subject_tag = full_title_selector.xpath("a/text()").get()
         subject_url = response.url
+        subject_id = re.findall(r"tid=(\d+)", subject_url)[0]
 
-        res = re.findall(r"tid=(\d+)", subject_url)
-        subject_id = 0
-        if res:
-            subject_id = res[0]
-        else:
-
-            print("err", subject_url)
         # 推出主题信息
         yield {
             "type": "subject",
