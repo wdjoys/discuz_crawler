@@ -1,0 +1,17 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+black = "*"
+
+[packages]
+scrapy = "*"
+twisted-iocpsupport = {file = "https://files.pythonhosted.org/packages/41/59/a42f561d63f45d003f2927ae69b577557b2797359086023ad7ff2c391834/twisted_iocpsupport-1.0.2-cp39-cp39-win_amd64.whl"}
+
+[requires]
+python_version = "3.9"
+
+[pipenv]
+allow_prereleases = true
