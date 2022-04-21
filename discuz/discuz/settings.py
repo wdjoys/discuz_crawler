@@ -17,9 +17,13 @@ Copyright (c) 2022 by github/wdjoys, All Rights Reserved.
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+import sys
+
+# DEBUG模式
+ISDEBUG = True if sys.gettrace() else False
 
 # 运行缓存信息，
-JOBDIR = "cache"
+# JOBDIR = "cache"
 
 BOT_NAME = "discuz"
 

@@ -31,6 +31,8 @@ from itemadapter import ItemAdapter
 
 import pymongo
 
+from settings import ISDEBUG
+
 
 class DiscuzPipeline:
     def open_spider(self, spider):
@@ -38,6 +40,8 @@ class DiscuzPipeline:
         pass
 
     def process_item(self, item, spider):
+        if ISDEBUG:
+            return item
         self.client.geem2bbs[item["type"]].insert_many(item["data"])
         return item
 
