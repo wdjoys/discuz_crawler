@@ -124,6 +124,7 @@ class DiscuzCrawlerSpider(CrawlSpider):
 
         data = []  # 帖子信息
         for post_selector in post_selectors:
+            # TODO: 楼主信息需要特殊处理
             content = post_selector.xpath("td[2]/div[@class='pct']//table").get()
             username = post_selector.xpath(
                 'td[1]//div[@class="pi"]//div[@class="authi"]/a/text()'
