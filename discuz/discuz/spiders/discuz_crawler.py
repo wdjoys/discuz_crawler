@@ -129,12 +129,16 @@ class DiscuzCrawlerSpider(CrawlSpider):
                 'td[1]//div[@class="pi"]//div[@class="authi"]/a/text()'
             ).get()
             post_time = (
-                post_selector.xpath("//em[@id]/text()").get().replace("发表于 ", "")
+                post_selector.xpath("td/div/div/div[@class='authi']/em/text()")
+                .get()
+                .replace("发表于 ", "")
             )
 
             # 发表于 昨天类似格式处理
             if not post_time:
-                post_time = post_selector.xpath("//em[@id]/span/@title").get()
+                post_time = post_selector.xpath(
+                    "td/div/div/div[@class='authi']/em/span/@title"
+                ).get()
 
             floor = (
                 post_selector.xpath("td[2]/div/strong/a")
