@@ -8,6 +8,11 @@ Description:
 
 Copyright (c) 2022 by github/wdjoys, All Rights Reserved. 
 """
+import sys
+
+ISDEBUG = bool(sys.gettrace())
+print(ISDEBUG)
+
 
 from scrapy.cmdline import execute
 

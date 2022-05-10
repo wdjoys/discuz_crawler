@@ -20,7 +20,7 @@ Copyright (c) 2022 by github/wdjoys, All Rights Reserved.
 import sys
 
 # DEBUG模式
-ISDEBUG = True if sys.gettrace() else False
+ISDEBUG = bool(sys.gettrace())
 
 # 运行缓存信息，
 # JOBDIR = "cache"
@@ -85,6 +85,7 @@ DEFAULT_REQUEST_HEADERS = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "discuz.pipelines.DiscuzPipeline": 300,
+    "discuz.pipelines.DiscuzImagesPipeline": 301,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -107,3 +108,6 @@ ITEM_PIPELINES = {
 # HTTPCACHE_DIR = 'httpcache'
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+
+IMAGES_STORE = "/images"

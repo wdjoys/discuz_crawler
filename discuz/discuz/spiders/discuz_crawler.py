@@ -8,23 +8,16 @@ Description:
 
 Copyright (c) 2022 by github/wdjoys, All Rights Reserved. 
 """
-"""
-Author: wdjoys
-Date: 2022-04-20 09:21:26
-LastEditors: wdjoys
-LastEditTime: 2022-04-20 09:55:52
-FilePath: \discuz_crawler\discuz\discuz\spiders\discuz_crawler.py
-Description: 
 
-Copyright (c) 2022 by github/wdjoys, All Rights Reserved. 
-"""
-import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 import re
 
 
 class DiscuzCrawlerSpider(CrawlSpider):
+    def parse(self, response, **kwargs):
+        pass
+
     name = "discuz_crawler"
     allowed_domains = ["cqscyd.com"]
     start_urls = ["http://www.cqscyd.com"]
@@ -59,6 +52,20 @@ class DiscuzCrawlerSpider(CrawlSpider):
             callback="paser_section",
             follow=True,
         ),
+        # 用户信息
+        Rule(
+            LinkExtractor(
+                allow=r"home\.php\?mod=space&uid=\d+$",
+                restrict_xpaths=(r"//div[1]/div[@class='authi']/a"),
+            ),
+            callback="parse_user",
+            follow=False,
+        ),
+        # # 附件图片
+        # Rule(
+        #     LinkExtractor(restrict_xpaths=(r"//img[@class='zoom']/@file",)),
+        #     callback="parse_user",
+        # )
     )
 
     def login(self, response):
@@ -69,6 +76,12 @@ class DiscuzCrawlerSpider(CrawlSpider):
         return item
 
     def paser_section(self, response):
+
+        """
+        爬板块页面，获取帖子信息
+        :param response:
+        :return:
+        """
 
         f_name = response.xpath(
             "//body/div[@id='wp']/div[@id='pt']/div[1]/a[4]/text()"
@@ -119,6 +132,11 @@ class DiscuzCrawlerSpider(CrawlSpider):
             }
 
     def paser_post(self, response):
+        """
+        爬帖子页面，获取楼层信息
+        :param response:
+        :return:
+        """
 
         post_selectors = response.xpath('//table[@class="plhin"]/tr[1]')
 
@@ -135,7 +153,7 @@ class DiscuzCrawlerSpider(CrawlSpider):
                 .replace("发表于 ", "")
             )
 
-            # 发表于 昨天类似格式处理
+            # "发表于 昨天"  类似格式处理
             if not post_time:
                 post_time = post_selector.xpath(
                     "td/div/div/div[@class='authi']/em/span/@title"
@@ -161,3 +179,35 @@ class DiscuzCrawlerSpider(CrawlSpider):
         # 推出楼层信息
         if data:  # 有可能帖子没权限，导致报错
             yield {"type": "post", "url": response.url, "data": data}
+
+            # 解析帖子内的附件图片url
+            if img_urls := response.xpath("//img[@class='zoom']/@file").getall():
+                yield {"type": "img", "url": response.url, "data": img_urls}
+
+    def parse_user(self, response):
+        """
+        爬个用户信息页面，获取用户信息
+
+        :return:
+        """
+
+        user_id = response.url.split("=")[-1]
+        user_name = response.xpath("//*[@id='uhd']/div[2]/h2/text()").get()
+        user_group = response.xpath("//ul/li/span/a/text()").get()
+        user_registration_date = response.xpath("//*[@id='pbbs']/li[2]/text()").get()
+        # user_credits = response.xpath("//*[@id='psts']/ul/li[2]/text()").get()
+        user_gold = response.xpath("//*[@id='psts']/ul/li[4]/text()").get()
+
+        data = [
+            {
+                "user_id": int(user_id),
+                "user_name": user_name,
+                "user_group": user_group,
+                "user_registration_date": user_registration_date,
+                # "user_credits": int(user_credits),
+                "user_gold": int(user_gold),
+                "url": response.url,
+            }
+        ]
+
+        yield {"type": "user", "url": response.url, "data": data}

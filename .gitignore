@@ -1,3 +1,5 @@
 PIPENV_VENV/
 __pycache__/
 .vscode/
+.idea/
+cache/
